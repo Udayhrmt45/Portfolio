@@ -16,6 +16,7 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .filter(Boolean);
 
 const allowAllOrigins = allowedOrigins.includes("*");
+const allowVercelPreview = process.env.ALLOW_VERCEL_PREVIEW === "true";
 
 app.use(
   cors({
@@ -24,10 +25,14 @@ app.use(
       if (allowAllOrigins) return callback(null, true);
       if (allowedOrigins.length === 0) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowVercelPreview && origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   })
 );
 app.use(express.json());
