@@ -10,22 +10,26 @@ import skillCategoryRoutes from "./routes/skillCategoryRoutes.js";
 
 const app = express();
 
+const normalizeOrigin = (origin = "") =>
+  origin.trim().replace(/\/+$/, "").toLowerCase();
+
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => normalizeOrigin(origin))
   .filter(Boolean);
 
 const allowAllOrigins = allowedOrigins.includes("*");
-const allowVercelPreview = process.env.ALLOW_VERCEL_PREVIEW === "true";
+const allowVercelPreview = process.env.ALLOW_VERCEL_PREVIEW !== "false";
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+      const requestOrigin = normalizeOrigin(origin);
       if (allowAllOrigins) return callback(null, true);
       if (allowedOrigins.length === 0) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      if (allowVercelPreview && origin.endsWith(".vercel.app")) {
+      if (allowedOrigins.includes(requestOrigin)) return callback(null, true);
+      if (allowVercelPreview && requestOrigin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
       return callback(new Error(`CORS blocked for origin: ${origin}`));
