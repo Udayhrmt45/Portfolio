@@ -15,11 +15,22 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+const allowAllOrigins = allowedOrigins.includes("*");
+
 app.use(
   cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowAllOrigins) return callback(null, true);
+      if (allowedOrigins.length === 0) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.options("*", cors());
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {
@@ -32,5 +43,10 @@ app.use("/api/certifications", certificationRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/skill-categories", skillCategoryRoutes);
+
+app.use((err, _req, res, _next) => {
+  console.error("Unhandled server error:", err);
+  res.status(500).json({ message: "Internal server error" });
+});
 
 export default app;
