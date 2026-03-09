@@ -7,8 +7,20 @@ const commonPoolOptions = {
 };
 
 const shouldUseSsl = process.env.DB_SSL === "true";
+const isProduction = process.env.NODE_ENV === "production";
+const hasDatabaseUrl = Boolean(process.env.DATABASE_URL);
+const hasDiscreteDbConfig =
+  Boolean(process.env.DB_HOST) &&
+  Boolean(process.env.DB_USER) &&
+  Boolean(process.env.DB_NAME);
 
-const db = process.env.DATABASE_URL
+if (isProduction && !hasDatabaseUrl && !hasDiscreteDbConfig) {
+  throw new Error(
+    "Database configuration missing. Set DATABASE_URL or DB_HOST/DB_USER/DB_NAME in environment variables."
+  );
+}
+
+const db = hasDatabaseUrl
   ? mysql.createPool({
       uri: process.env.DATABASE_URL,
       ssl: shouldUseSsl ? { rejectUnauthorized: false } : undefined,
