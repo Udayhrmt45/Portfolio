@@ -54,46 +54,48 @@ const CertificationCarousel = ({ certifications }) => {
 
   return (
     <div className="relative max-w-2xl mx-auto">
-      <AnimatePresence initial={false} mode="wait" custom={direction}>
-        <motion.div
-          key={cert.id}
-          custom={direction}
-          variants={variants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 shadow-sm transition hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
-        >
-          <div
-            className="relative h-64 bg-gray-50 flex items-center justify-center p-4 cursor-pointer dark:bg-slate-900"
-            onClick={() => setPreview(cert.image)}
+      <div className="overflow-hidden rounded-2xl">
+        <AnimatePresence initial={false} mode="wait" custom={direction}>
+          <motion.div
+            key={cert.id}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 shadow-sm transition hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
           >
-            <img
-              src={cert.image}
-              alt={cert.title}
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
+            <div
+              className="relative h-64 bg-gray-50 flex items-center justify-center p-4 cursor-pointer dark:bg-slate-900"
+              onClick={() => setPreview(cert.image)}
+            >
+              <img
+                src={cert.image}
+                alt={cert.title}
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
 
-          <div className="p-6 text-center">
-            <h3 className="text-lg font-semibold mb-2">{cert.title}</h3>
-            <p className="mb-4 text-sm text-gray-500 dark:text-slate-400">
-              {cert.issuer} • {cert.year}
-            </p>
-            {cert.document_link && (
-              <a
-                href={formatUrl(cert.document_link)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-4 py-2 text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition"
-              >
-                View Certificate
-              </a>
-            )}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+            <div className="p-6 text-center">
+              <h3 className="text-lg font-semibold mb-2">{cert.title}</h3>
+              <p className="mb-4 text-sm text-gray-500 dark:text-slate-400">
+                {cert.issuer} • {cert.year}
+              </p>
+              {cert.document_link && (
+                <a
+                  href={formatUrl(cert.document_link)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-4 py-2 text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                >
+                  View Certificate
+                </a>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       <button
         onClick={prev}
